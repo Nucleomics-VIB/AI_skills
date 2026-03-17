@@ -71,18 +71,48 @@ else
   MARP="marp"
 fi
 
+# ── Resolve a working Chrome for local-file access (Linux NFS workaround) ──
+# On Linux the snap Chromium sandbox blocks paths on NFS mounts (e.g. /data/);
+# use puppeteer's own downloaded Chrome instead.  On macOS, marp finds the
+# system browser fine so no workaround is needed.
+BROWSER_ARGS=""
+if [[ "$(uname)" == "Linux" ]]; then
+  CHROME_PATH="$(find "${HOME}/.cache/puppeteer/chrome" -name "chrome" -type f 2>/dev/null | sort -V | tail -1)"
+
+  if [[ -z "${CHROME_PATH}" ]]; then
+    echo "[build.sh] Downloading a compatible Chrome via puppeteer..."
+    MARP_MODULES="$(dirname "$(which marp)")/../lib/node_modules/@marp-team/marp-cli/node_modules"
+    node -e "
+      const { install, resolveBuildId } = require('${MARP_MODULES}/@puppeteer/browsers');
+      const cacheDir = process.env.HOME + '/.cache/puppeteer';
+      resolveBuildId('chrome', 'linux', 'stable').then(buildId =>
+        install({ browser: 'chrome', buildId, cacheDir })
+      ).then(r => console.log(r.executablePath)).catch(e => { console.error(e.message); process.exit(1); });
+    " 2>&1
+    CHROME_PATH="$(find "${HOME}/.cache/puppeteer/chrome" -name "chrome" -type f 2>/dev/null | sort -V | tail -1)"
+  fi
+
+  if [[ -n "${CHROME_PATH}" ]]; then
+    echo "[build.sh] Using Chrome: ${CHROME_PATH}"
+    BROWSER_ARGS="--browser-path ${CHROME_PATH}"
+  fi
+fi
+
 # ── Build ──────────────────────────────────────────────────────────────────
 echo "[build.sh] Building PPTX: ${STEM}.pptx"
-"${MARP}" "${INPUT}" --pptx --allow-local-files -o "${OUT_DIR}/${STEM}.pptx"
+# shellcheck disable=SC2086
+"${MARP}" "${INPUT}" --pptx --allow-local-files ${BROWSER_ARGS} -o "${OUT_DIR}/${STEM}.pptx"
 echo "[build.sh]  → ${OUT_DIR}/${STEM}.pptx"
 
 echo "[build.sh] Building HTML: ${STEM}.html"
-"${MARP}" "${INPUT}" --html --allow-local-files -o "${OUT_DIR}/${STEM}.html"
+# shellcheck disable=SC2086
+"${MARP}" "${INPUT}" --html --allow-local-files ${BROWSER_ARGS} -o "${OUT_DIR}/${STEM}.html"
 echo "[build.sh]  → ${OUT_DIR}/${STEM}.html"
 
 if [[ "${BUILD_PDF}" == true ]]; then
   echo "[build.sh] Building PDF: ${STEM}.pdf"
-  "${MARP}" "${INPUT}" --pdf --allow-local-files -o "${OUT_DIR}/${STEM}.pdf"
+  # shellcheck disable=SC2086
+  "${MARP}" "${INPUT}" --pdf --allow-local-files ${BROWSER_ARGS} -o "${OUT_DIR}/${STEM}.pdf"
   echo "[build.sh]  → ${OUT_DIR}/${STEM}.pdf"
 fi
 
