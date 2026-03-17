@@ -25,6 +25,8 @@ Edit or replace `application_note.md` with your own content. The example file de
 - Tables
 - A key metrics summary box
 
+See **`WRITING_GUIDE.md`** for content requirements, section rules, formatting conventions, and glossary curation.
+
 ### 2. Set up the conversion environment (once)
 
 ```bash

@@ -54,6 +54,8 @@ Output files are written alongside the input `.md` file, named from its stem:
 
 Read `marp_template/MARP_SLIDE_GUIDE.md` before creating a new deck — it explains every design decision in the example so you can reproduce the same layout in a new project.
 
+See **`WRITING_GUIDE.md`** for slide prose guidelines, narrative structure, and content rules (what belongs on a slide vs. in a companion document).
+
 ## Using with conda run (no environment activation needed)
 
 ```bash

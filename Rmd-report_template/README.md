@@ -53,3 +53,8 @@ A working LaTeX installation is also required (TinyTeX recommended):
 install.packages("tinytex")
 tinytex::install_tinytex()
 ```
+
+## Writing guide
+
+See **`WRITING_GUIDE.md`** for content requirements, section rules, code chunk conventions,
+and statistical reporting standards.
