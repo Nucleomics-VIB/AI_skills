@@ -36,6 +36,6 @@ Add a new subfolder for each new skill. Include a clear `README.md` or guide fil
 
 ---
 
-Maintained by Stéphane Plaisance With help from Claude AI
+Maintained by Stéphane Plaisance with help from Claude AI
 [Nucleomics-VIB](https://github.com/Nucleomics-VIB)
 version 1.0; 2026-03-17
