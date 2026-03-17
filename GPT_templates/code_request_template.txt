@@ -1,0 +1,26 @@
+# Template Usage Example:
+# Language: Python
+# Code request template URL: https://raw.githubusercontent.com/[Your GitHub Username]/[Your GitHub Repository Name]/main/script_template.txt
+# Additional request details: Please write a script that reads in a tab-delimited text file containing gene names in the first column and count data in the remaining columns, normalizes the counts by column total, and saves the resulting data frame to a new file. Thank you!
+# 
+# Replace the placeholders in the template below with your own code request details.
+
+Title: [Code Request] 
+Description: [Insert a brief description of the code you need here, including any necessary context or background information. Be as specific as possible.]
+Expected Outputs: [List the expected outputs of the code here, including any specific data formats or file types.]
+Desired Language: [Insert the name of the programming language you would like the code to be written in here.]
+Code formatting request: [python|black; R|styler; perl|Perl::Tidy; C++|clang-format]
+
+--BEGIN TEMPLATE--
+Shebang: Please add the appropriate shebang for [Desired Language] at the beginning of the code.
+Description: [Insert a brief description of what the code does here. This should be a one or two sentence summary that explains the purpose of the code.]
+Usage: [Provide a brief overview of how to run the code here, including any required command-line arguments or input files.]
+
+# Credit line
+# Created by ChatGPT for [Insert your name or handle here]
+# Date: Please insert the current date in YYYY-MM-DD format here.
+# Version: v[Insert Version Number Here] - Iteration [Insert Iteration Number Here]
+
+[Insert your code request here. Be sure to include any necessary input data, expected outputs, and any specific formatting or style requirements.]
+
+--END TEMPLATE--

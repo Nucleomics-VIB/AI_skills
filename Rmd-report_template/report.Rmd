@@ -1,0 +1,160 @@
+---
+title:  |
+  | Your report
+author: 
+- "You, [VIB - Nucleomics Core, nucleomics@vib.be]"
+date: $`r format(Sys.time(), "%a %b %d, %Y")`$ - version 1.0
+fontsize: 10pt
+geometry: top=1cm, bottom=1cm, left=2.5cm, right=1.5cm, includeheadfoot=true
+bibliography: tex_data/bibliography.bib
+output:
+  rmarkdown::pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    fig_caption: false
+    fig_width: 5
+    fig_height: 5
+    includes:  
+      in_header: tex_data/preamble.tex
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, eval=TRUE, include=FALSE, echo=FALSE}
+
+# set default parameters [echo=TRUE to include code]
+# general
+library("knitr")
+library("ggplot2")
+library("RColorBrewer")
+# any package you need here
+
+# edit next line to point to your current report path
+workdir <- "/data/analyses/Rmd-report_template"
+opts_chunk$set(message=FALSE, 
+               warning=FALSE, 
+               eval=FALSE,
+               echo=FALSE,
+               include=TRUE,
+               fig.cap="",
+               fig.show="asis",
+               fig.keep="high",
+               cache=TRUE,
+               comment=NA,
+               root.dir=workdir)
+options(scipen=999)
+setwd(workdir)
+
+# some key default options here
+# eval=FALSE by default unless you set your block to TRUE
+# echo=FALSE by default (do not show the code) unless you change it to TRUE
+# include=TRUE by default unless you set it to FALSE in your block
+# 
+# many other options can be tuned as documented by *Yihui Xie* at **[Knitr home page](https://yihui.org/knitr/)**
+
+```
+
+\bigskip
+
+\footnotesize
+
+last edits: $`r format(Sys.time(), "%a %b %d, %Y")`$
+
+\normalsize
+
+\bigskip
+
+\bigskip
+
+# Aim
+
+Add a report picture to put on top of page1 by editing the **tex_data/preamble.tex** file (also add latex goodies here)
+
+Look for references and get them formatted for you with **[texmed](http://www.bioinformatics.org/texmed/)**
+
+Use the bibtex formatted references added to **tex_data/bibliography.bib** like this Samtools example [@pmid19505943] to show references inline.
+
+Show some text in smaller fonts
+
+\footnotesize
+
+```
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
+when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
+It has survived not only five centuries, but also the leap into electronic typesetting, 
+remaining essentially unchanged. It was popularised in the 1960s with the release of 
+Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing 
+software like Aldus PageMaker including versions of Lorem Ipsum.
+```
+
+\normalsize
+
+
+Insert a markdown table prepared from an excel copy-paste at **[tablesgenerator](https://www.tablesgenerator.com/)**
+
+\footnotesize
+
+| Tables   |      Are      |  Cool |
+|----------|:-------------:|------:|
+| col 1 is |  left-aligned | $1600 |
+| col 2 is |    centered   |   $12 |
+| col 3 is | right-aligned |    $1 |
+
+\normalsize
+
+Insert a picture and control its size from a file stored in the local **pictures/** folder.
+
+
+\begin{center}
+
+\includegraphics[width=150pt]{pictures/knit-logo.png}
+
+\end{center}
+
+Inset code blocks (hint! can be bash, python, R, others)
+
+\footnotesize
+
+```{bash test, echo=TRUE, eval=TRUE}
+# this code will be shown in the report AND run
+echo "hello world!"
+```
+
+\bigskip
+
+```{bash test2, echo=TRUE, eval=FALSE}
+# this code will be shown in the report BUT NOT run due to eval=FALSE
+echo "shown inline BUT not run!"
+```
+
+\normalsize
+
+# Conclusion
+
+Bla Bla
+
+\bigskip
+
+\footnotesize
+
+last edits: $`r format(Sys.time(), "%a %b %d, %Y")`$
+
+\normalsize
+
+\footnotesize
+
+```{r, eval=FALSE, echo=FALSE}
+sessionInfo()
+```
+
+\newpage
+ 
+# References
+
+\bigskip
+ 
+\footnotesize
+ 
+ 

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code workspace settings (optional - commit .vscode if you want to share settings)
+# .vscode/
+
+# AI session memory files (OPTIONAL - uncomment if you want local-only AI files)
+# AI_files/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Logs
+*.log

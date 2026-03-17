@@ -1,0 +1,32 @@
+# Build logs
+build_logs/
+backup/
+
+# Docker build artifacts
+*.log
+
+# Development session files (local development only)
+AI_INSTRUCTIONS.md
+CURRENT_CONTEXT.md
+SESSION_DECISIONS.md
+COPILOT_REQUEST_TEMPLATE.md
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*~
+*.swp
+*.swo
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+

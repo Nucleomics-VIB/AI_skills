@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whole Exome Sequencing on Element Biosciences Aviti — VIB Nucleomics Core</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: #f9f9f7;
+      color: #222;
+    }
+
+    header {
+      background: #1e3a1e;
+      color: #fff;
+      padding: 48px 40px 36px;
+      text-align: center;
+    }
+
+    header p.eyebrow {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.85em;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a8d8a8;
+      margin: 0 0 10px;
+    }
+
+    header h1 {
+      font-size: 2.2em;
+      margin: 0 0 12px;
+      line-height: 1.25;
+    }
+
+    header p.subtitle {
+      font-size: 1.1em;
+      color: #cec;
+      margin: 0;
+    }
+
+    .figure-pair {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 24px 40px;
+      background: #eee;
+    }
+
+    .figure-pair figure {
+      margin: 0;
+      flex: 0 1 27%;
+      text-align: center;
+    }
+
+    .figure-pair img {
+      width: 100%;
+      height: auto;
+    }
+
+    .figure-pair figcaption {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.78em;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    main {
+      max-width: 820px;
+      margin: 40px auto;
+      padding: 0 30px;
+    }
+
+    h2 {
+      font-size: 1.4em;
+      color: #1e3a1e;
+      border-bottom: 2px solid #1e3a1e;
+      padding-bottom: 6px;
+      margin-top: 40px;
+    }
+
+    p {
+      line-height: 1.75;
+      margin: 0.8em 0;
+    }
+
+    ul {
+      line-height: 1.75;
+      padding-left: 1.5em;
+    }
+
+    ul li {
+      margin-bottom: 0.4em;
+    }
+
+    .highlight-box {
+      background: #eaf4ea;
+      border-left: 5px solid #1e3a1e;
+      padding: 18px 24px;
+      margin: 30px 0;
+      font-size: 1.05em;
+    }
+
+    .highlight-box strong {
+      color: #1e3a1e;
+    }
+
+    .contact {
+      background: #1e3a1e;
+      color: #fff;
+      padding: 36px 40px;
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    .contact h2 {
+      color: #a8d8a8;
+      border-bottom: 1px solid #a8d8a8;
+      display: inline-block;
+      padding-bottom: 4px;
+      margin-top: 0;
+    }
+
+    .contact p {
+      color: #cec;
+      margin: 10px 0 4px;
+    }
+
+    .contact a {
+      color: #7ec87e;
+      text-decoration: none;
+    }
+
+    .contact a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.78em;
+      color: #999;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">VIB Nucleomics Core &mdash; Application Note &mdash; February 2026</p>
+  <h1>High-Quality Whole Exome Sequencing<br>on Element Biosciences Aviti</h1>
+  <p class="subtitle">Coverage &middot; Capture Efficiency &middot; Clinical-Grade Variant Discovery</p>
+</header>
+
+<div class="figure-pair">
+  <figure>
+    <img src="figures/impact_distribution.png"
+         alt="Variant impact distribution — HIGH, MODERATE, LOW and MODIFIER classes across 24 human exomes" />
+    <figcaption>Variant impact distribution: HIGH (0.44%, 724 variants), MODERATE (18.2%), LOW (23.4%), MODIFIER (58.0%) — 724 loss-of-function variants prioritised for follow-up.</figcaption>
+  </figure>
+  <figure>
+    <img src="figures/functional_classes.png"
+         alt="Coding variant functional classes — missense, silent and nonsense distribution" />
+    <figcaption>Coding variant functional classes: missense (44.4%), silent (55.3%), nonsense (0.26%) — missense/silent ratio 0.80, consistent with natural human variation.</figcaption>
+  </figure>
+</div>
+
+<main>
+
+  <h2>Beyond Gene Lists — Clinical-Grade Variant Discovery</h2>
+
+  <p>
+    Whole exome sequencing (WES) targets the ~1&ndash;2% of the genome that encodes proteins yet harbours
+    approximately <strong>85% of disease-causing variants</strong>. At the VIB Nucleomics Core we have
+    validated a complete end-to-end WES service on the
+    <strong>Element Biosciences Aviti</strong> platform, pairing it with the
+    <strong>Twist Exome v2.0.2 capture panel</strong> (37 Mb, 283,942 target regions) and a
+    best-practice bioinformatics pipeline based on BWA-MEM2, DeepVariant, GLnexus, and SnpEff.
+  </p>
+
+  <p>
+    Our benchmark across 24 human exomes demonstrates uniform, high-depth coverage, outstanding
+    capture efficiency, and a 100% variant quality-filter pass rate — meeting the standards required
+    for both research and diagnostic-grade applications.
+  </p>
+
+  <div class="highlight-box">
+    <strong>Key results at a glance:</strong>
+    <ul>
+      <li>Mean on-target coverage: <strong>50.5&times;</strong> (range 40&ndash;51.5&times;)</li>
+      <li><strong>98.77%</strong> of genes with complete exon coverage</li>
+      <li>Target region dropout: only <strong>0.31%</strong></li>
+      <li><strong>28,856 high-quality on-target variants</strong> per cohort (24 samples)</li>
+      <li><strong>724 HIGH-impact variants</strong> — stop-gained, frameshift, splice-site</li>
+      <li>100% variant quality-filter pass rate</li>
+    </ul>
+  </div>
+
+  <h2>How It Works</h2>
+
+  <p>
+    Our pipeline delivers much more than a VCF file. Comprehensive annotation links every variant to
+    its gene, transcript, and predicted functional consequence. HIGH-impact variants are automatically
+    prioritised for follow-up. Coverage reports document every gene and exon, clearly flagging the
+    small fraction requiring targeted validation.
+  </p>
+
+  <p>
+    Beyond standard SNP and indel calling, the same WES data supports a range of advanced analyses:
+  </p>
+
+  <ul>
+    <li><strong>Copy number variation (CNV)</strong> detection at exon resolution</li>
+    <li><strong>Structural variants</strong> — deletions, duplications, inversions, translocations</li>
+    <li><strong>Gene fusions</strong> and chromosomal rearrangements</li>
+    <li><strong>Viral integration</strong> mapping (HPV, HBV, EBV, and others)</li>
+    <li><strong>Mitochondrial variants</strong> and heteroplasmy quantification</li>
+    <li>Pathway enrichment, variant burden testing, and ACMG/AMP classification</li>
+  </ul>
+
+  <h2>What This Means for Your Research</h2>
+
+  <p>
+    The service scales from small pilot experiments to large population cohorts. Supported designs
+    include genotype contrasts (wild-type vs. knockout), tissue mosaicism studies, case-control
+    analyses, and family-based pedigree sequencing. Human and mouse exomes are routinely processed;
+    other species are supported where validated capture panels are available.
+  </p>
+
+  <p>
+    All workflows are version-controlled, QC is reported at every stage with MultiQC dashboards,
+    and a consultation service is available for experimental design, sample sizing, and
+    interpretation of results.
+  </p>
+
+</main>
+
+<div class="contact">
+  <h2>Interested? Let&rsquo;s Talk</h2>
+  <p>
+    We welcome enquiries about project design, pricing, turnaround times,<br>
+    or custom analysis requirements for your specific research questions.
+  </p>
+  <p>
+    Contact the <strong>VIB Nucleomics Core</strong> team:<br>
+    <a href="mailto:nucleomics@vib.be">nucleomics@vib.be</a>
+    &nbsp;&bull;&nbsp;
+    <a href="https://www.nucleomics.be" target="_blank">www.nucleomics.be</a>
+  </p>
+</div>
+
+<footer>
+  &copy; 2026 VIB Nucleomics Core &mdash; Application Note: High-Quality Whole Exome Sequencing on Element Biosciences Aviti
+</footer>
+
+</body>
+</html>

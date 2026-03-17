@@ -1,0 +1,15 @@
+// 
+// settings.json
+// Purpose: Configures the VS Code workspace to support Copilot session memory system. Associates key files with Markdown format and displays reminders to review session context.
+// Usage Example: Ensures Copilot and users see reminders and have proper file associations for session memory workflow. Update this file to change workspace behavior or reminders.
+// 
+{
+    "github.copilot.chat.welcomeMessage": "Always check CURRENT_CONTEXT.md and SESSION_DECISIONS.md before making changes",
+    "files.associations": {
+        "CURRENT_CONTEXT.md": "markdown",
+        "SESSION_DECISIONS.md": "markdown"
+    },
+    "files.watcherExclude": {
+        "**/node_modules/**": false
+    }
+}

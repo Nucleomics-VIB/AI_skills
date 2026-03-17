@@ -1,0 +1,21 @@
+name: markdown2pdf
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandoc>=3.0       # Markdown to PDF conversion
+  - tectonic>=0.15    # Self-contained XeLaTeX engine (no system texlive required)
+
+# ----------------------------------------------------------------------------
+# System-level requirements (install via apt on Ubuntu):
+#
+#   sudo apt-get install fonts-dejavu
+#
+# The following are NOT needed when using tectonic as the PDF engine:
+#   texlive-xetex, texlive-fonts-recommended, texlive-fonts-extra,
+#   ttf-mscorefonts-installer
+#
+# fonts-dejavu is typically pre-installed on Ubuntu but must be present for
+# Unicode characters (≥, ≤, ×, →) to render correctly in the PDF.
+# DejaVu Serif is used as the main font via pandoc's --variable mainfont=
+# ----------------------------------------------------------------------------

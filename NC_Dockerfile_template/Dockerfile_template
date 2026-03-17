@@ -1,0 +1,331 @@
+# Dockerfile Template for Nucleomics-VIB Projects
+# This template incorporates best practices from multiple projects
+# 
+# Usage:
+# 1. Replace {{PROJECT_NAME}} with your project name
+# 2. Replace {{BASE_IMAGE}} with appropriate base image (e.g., mambaorg/micromamba:1.5.8 or ubuntu:22.04)
+# 3. Customize environment files and dependencies sections
+# 4. Adjust build steps for project-specific compilation needs
+# 5. Update final commands and entrypoints
+#
+# IMPORTANT: USER SWITCHING PATTERN
+# This template uses proper USER switching to avoid permission issues:
+# - Use ROOT for: system packages, file copying, directory creation, system configuration
+# - Use MAMBA_USER for: conda environment creation, package installation, environment verification
+# - End with MAMBA_USER for: secure runtime execution
+
+FROM {{BASE_IMAGE}}
+
+# ============================================================================
+# SYSTEM SETUP AND LOCALE CONFIGURATION
+# ============================================================================
+
+# Switch to root for system installation (if using micromamba base)
+USER root
+
+# Set UTF-8 locale for reproducible RMarkdown/YAML parsing and international text support
+RUN apt-get update && apt-get install -y locales && \
+    locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+# Set non-interactive frontend to avoid prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ============================================================================
+# SYSTEM DEPENDENCIES
+# ============================================================================
+
+# Install essential system packages
+# Customize this list based on project requirements
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Essential tools
+    git \
+    wget \
+    curl \
+    ca-certificates \
+    unzip \
+    bzip2 \
+    rsync \
+    # Build tools (if compilation needed)
+    build-essential \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    # Text processing and utilities
+    gawk \
+    tar \
+    gzip \
+    xz-utils \
+    bc \
+    parallel \
+    # Additional tools based on project needs
+    # python3 python3-pip python3-yaml \
+    # openjdk-11-jre-headless \
+    # libxml2-dev libssl-dev libcurl4-openssl-dev \
+    # libfontconfig1 libfreetype6 libpng-dev libtiff5 libjpeg-dev \
+    # gfortran libblas-dev liblapack-dev \
+    # aria2 less bioawk \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================================================
+# CONDA/MAMBA ENVIRONMENT SETUP
+# ============================================================================
+
+# For micromamba base images:
+USER $MAMBA_USER
+
+# Set mamba environment variables (following official micromamba-docker documentation)
+ENV MAMBA_EXE="/bin/micromamba"
+ENV MAMBA_ROOT_PREFIX="/opt/conda"
+
+# For Ubuntu base images with manual micromamba installation:
+# RUN wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj -C /usr/local/bin/ --strip-components=1 bin/micromamba
+# ENV MAMBA_ROOT_PREFIX=/opt/micromamba
+# ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
+
+# Copy environment files (customize paths as needed)
+# Switch to root for file copying
+USER root
+COPY environment.yml /tmp/environment.yml
+RUN chown $MAMBA_USER:$MAMBA_USER /tmp/environment.yml
+# COPY env/ /tmp/env/  # For multiple environment files
+
+# Create environment directory structure with proper permissions
+RUN mkdir -p /opt/conda/envs && \
+    chown -R $MAMBA_USER:$MAMBA_USER /opt/conda && \
+    chmod -R 755 /opt/conda
+
+# Set R library environment variables if using R across multiple environments
+# ENV R_LIBS_SITE="/opt/conda/envs/{{ENV_NAME}}/lib/R/library"
+
+# Create conda environment(s)
+# Switch to MAMBA_USER for environment creation
+USER $MAMBA_USER
+
+RUN echo "=== Creating conda environment ===" && \
+    cat /tmp/environment.yml && \
+    echo "=== Running micromamba create ===" && \
+    micromamba create -f /tmp/environment.yml && \
+    echo "=== Listing environments ===" && \
+    micromamba env list && \
+    echo "=== Checking environment was created ===" && \
+    micromamba run -n {{ENV_NAME}} python --version && \
+    echo "✅ Environment created successfully" && \
+    micromamba clean -a -y
+
+# For multiple environments:
+# RUN micromamba create -y -n env1 -f /tmp/env/env1.yml \
+#     && micromamba create -y -n env2 -f /tmp/env/env2.yml \
+#     && micromamba clean -a -y
+
+# ============================================================================
+# ENVIRONMENT ACTIVATION AND PATH SETUP
+# ============================================================================
+
+# Determine actual environment path (adjust based on base image)
+# For micromamba images: typically /opt/conda/envs/{{ENV_NAME}}
+# For manual installation: typically /opt/micromamba/envs/{{ENV_NAME}}
+ENV PATH="/opt/conda/envs/{{ENV_NAME}}/bin:/app/scripts:$PATH"
+
+# For multiple environments, add all to PATH:
+# ENV PATH="/opt/conda/envs/env1/bin:/opt/conda/envs/env2/bin:/opt/conda/envs/{{ENV_NAME}}/bin:$PATH"
+
+# Verify environment and tools are available
+RUN micromamba run -n {{ENV_NAME}} bash -c 'echo "Environment verification:" && which python && python --version' && \
+    parallel --version && \
+    awk --version
+
+# ============================================================================
+# PROJECT FILES AND COMPILATION
+# ============================================================================
+
+# Switch back to root for file operations
+USER root
+
+# Create application directory
+RUN mkdir -p /app/scripts
+
+# Copy project files
+COPY scripts/ /app/scripts/
+COPY README.md /app/
+# COPY additional_files/ /app/
+
+# ============================================================================
+# PROJECT-SPECIFIC BUILD STEPS
+# ============================================================================
+
+# Example: Clone and build external tools
+# RUN git clone --filter=blob:none --sparse https://github.com/{{ORG}}/{{REPO}}.git /tmp/{{TOOL}} && \
+#     cd /tmp/{{TOOL}} && \
+#     git sparse-checkout set {{SUBDIR}} && \
+#     cp -r {{SUBDIR}} /tmp/build_{{TOOL}} && \
+#     rm -rf /tmp/{{TOOL}}
+
+# WORKDIR /tmp/build_{{TOOL}}
+
+# Example: Build C/C++ tools
+# RUN echo "=== Starting {{TOOL}} compilation ===" && \
+#     ls -la && \
+#     chmod +x install_deps.sh && \
+#     ./install_deps.sh && \
+#     make clean-all && \
+#     make && \
+#     cp {{EXECUTABLE}} /app/scripts/{{EXECUTABLE}} && \
+#     chmod +x /app/scripts/{{EXECUTABLE}}
+
+# Clean up build artifacts
+# RUN cd / && rm -rf /tmp/build_{{TOOL}}
+
+# Return to app directory
+WORKDIR /app
+
+# Make scripts executable
+RUN chmod +x /app/scripts/*.sh /app/scripts/*.R 2>/dev/null || true
+
+# ============================================================================
+# SYSTEM-WIDE ENVIRONMENT CONFIGURATION
+# ============================================================================
+
+# Add useful aliases for all users
+RUN echo 'alias ll="ls -lah"' >> /etc/bash.bashrc
+
+# Initialize conda for interactive sessions
+RUN micromamba shell init --shell bash --prefix /opt/micromamba && \
+    echo 'micromamba activate {{ENV_NAME}}' >> /home/$MAMBA_USER/.bashrc 2>/dev/null || true
+
+# Set up system-wide environment activation for all users and subshells
+RUN echo '# Auto-activate {{ENV_NAME}} environment for all bash sessions' >> /etc/bash.bashrc && \
+    echo 'eval "$(micromamba shell hook --shell bash)"' >> /etc/bash.bashrc && \
+    echo 'micromamba activate {{ENV_NAME}} 2>/dev/null || true' >> /etc/bash.bashrc && \
+    echo 'export PATH="/opt/conda/envs/{{ENV_NAME}}/bin:$PATH"' >> /etc/bash.bashrc && \
+    echo 'export CONDA_DEFAULT_ENV={{ENV_NAME}}' >> /etc/bash.bashrc && \
+    echo 'export CONDA_SHLVL=1' >> /etc/bash.bashrc && \
+    echo '# Global conda/mamba aliases' >> /etc/bash.bashrc && \
+    echo 'alias conda="micromamba"' >> /etc/bash.bashrc && \
+    echo 'alias mamba="micromamba"' >> /etc/bash.bashrc && \
+    echo 'export MAMBA_EXE="/opt/micromamba/bin/micromamba"' >> /etc/bash.bashrc && \
+    echo 'export MAMBA_ROOT_PREFIX="/opt/micromamba"' >> /etc/bash.bashrc
+
+# Create wrapper scripts as fallback for conda/mamba commands
+RUN echo '#!/bin/bash' > /usr/local/bin/conda && \
+    echo 'exec micromamba "$@"' >> /usr/local/bin/conda && \
+    chmod +x /usr/local/bin/conda && \
+    echo '#!/bin/bash' > /usr/local/bin/mamba && \
+    echo 'exec micromamba "$@"' >> /usr/local/bin/mamba && \
+    chmod +x /usr/local/bin/mamba
+
+# ============================================================================
+# EXTERNAL TOOLS AND DATABASES
+# ============================================================================
+
+# Example: Download databases or external resources
+# RUN bash /app/scripts/download_db.sh
+# ENV QIIME_CONFIG_PATH=/app/databases
+
+# Example: Install additional tools
+# RUN wget -qO- https://get.nextflow.io | bash && \
+#     mv nextflow /usr/local/bin/ && \
+#     chmod +x /usr/local/bin/nextflow
+
+# ============================================================================
+# RUNTIME ENVIRONMENT SETUP
+# ============================================================================
+
+# Set fallback temporary directories for build-time and tools that don't respect runtime overrides
+# These can be overridden at runtime by docker run -e TMPDIR=/data/tmp etc.
+ENV TMPDIR=/tmp
+ENV TMP=/tmp  
+ENV TEMP=/tmp
+
+# Create a runtime environment setup script
+RUN echo '#!/bin/bash' > /app/setup_runtime_env.sh && \
+    echo 'mkdir -p /data/tmp /data/work 2>/dev/null || true' >> /app/setup_runtime_env.sh && \
+    echo 'export TMPDIR=${TMPDIR:-/tmp}' >> /app/setup_runtime_env.sh && \
+    echo 'export TMP=${TMP:-/tmp}' >> /app/setup_runtime_env.sh && \
+    echo 'export TEMP=${TEMP:-/tmp}' >> /app/setup_runtime_env.sh && \
+    echo 'echo "[CONTAINER] Temporary directories: TMPDIR=$TMPDIR TMP=$TMP TEMP=$TEMP"' >> /app/setup_runtime_env.sh && \
+    chmod +x /app/setup_runtime_env.sh
+
+# Create entrypoint script to ensure conda environment is active
+RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
+    echo '# Source runtime environment setup' >> /app/entrypoint.sh && \
+    echo 'source /app/setup_runtime_env.sh' >> /app/entrypoint.sh && \
+    echo '# Source system bashrc to ensure environment activation' >> /app/entrypoint.sh && \
+    echo 'source /etc/bash.bashrc' >> /app/entrypoint.sh && \
+    echo '# Verify environment is active' >> /app/entrypoint.sh && \
+    echo 'echo "[CONTAINER] Active environment: $CONDA_DEFAULT_ENV"' >> /app/entrypoint.sh && \
+    echo 'echo "[CONTAINER] PATH includes conda: $(echo $PATH | grep -o "/opt/conda/envs/{{ENV_NAME}}/bin" || echo "NOT FOUND")"' >> /app/entrypoint.sh && \
+    echo '# Create simplified activation script for any remaining edge cases' >> /app/entrypoint.sh && \
+    echo 'echo "export PATH=/opt/conda/envs/{{ENV_NAME}}/bin:\$PATH" > /tmp/conda_env.sh' >> /app/entrypoint.sh && \
+    echo 'chmod +x /tmp/conda_env.sh' >> /app/entrypoint.sh && \
+    echo 'exec "$@"' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
+
+# Set working directory permissions
+RUN chmod 777 /app
+
+# ============================================================================
+# FINAL VERIFICATION
+# ============================================================================
+
+# Verify that all required executables are present
+RUN echo "=== Verifying executables ===" && \
+    ls -la /app/scripts/ && \
+    test -f /app/scripts/{{MAIN_SCRIPT}}.sh && echo "✅ {{MAIN_SCRIPT}}.sh found" && \
+    micromamba run -n {{ENV_NAME}} bash -c 'ls /opt/conda/envs/{{ENV_NAME}}/bin/ | head -10' && \
+    echo "✅ All executables verified successfully"
+
+# ============================================================================
+# RUNTIME CONFIGURATION
+# ============================================================================
+
+# Switch back to micromamba user for runtime (if using micromamba base)
+USER $MAMBA_USER
+
+# Set environment variables for runtime (self-sufficient container)
+ENV CONDA_DEFAULT_ENV={{ENV_NAME}}
+ENV CONDA_SHLVL=1
+ENV PATH="/opt/conda/envs/{{ENV_NAME}}/bin:/app/scripts:$PATH"
+
+# Expose volume mount point for user data
+VOLUME ["/data"]
+
+# Set entrypoint to ensure conda environment is active
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Set the default command (customize as needed)
+CMD ["/app/scripts/{{MAIN_SCRIPT}}.sh"]
+
+# ============================================================================
+# TEMPLATE CUSTOMIZATION NOTES
+# ============================================================================
+#
+# Required replacements:
+# - {{PROJECT_NAME}}: Name of your project
+# - {{BASE_IMAGE}}: Base Docker image (mambaorg/micromamba:1.5.8, ubuntu:22.04, etc.)
+# - {{ENV_NAME}}: Name of your conda environment
+# - {{MAIN_SCRIPT}}: Name of your main executable script
+# 
+# Optional customizations:
+# - Add/remove system packages in the dependencies section
+# - Modify environment setup for multiple environments
+# - Add project-specific build steps
+# - Include database downloads or external tool installations
+# - Adjust file copying and permissions
+# 
+# Common patterns:
+# 1. For bioinformatics: Include bioawk, samtools, R packages
+# 2. For data analysis: Include python, jupyter, pandas, numpy
+# 3. For web apps: Include nodejs, nginx, supervisord
+# 4. For workflows: Include nextflow, snakemake, cwltool
+# 
+# Best practices included:
+# - UTF-8 locale configuration
+# - System-wide conda environment activation
+# - Proper cleanup of build artifacts
+# - Flexible temporary directory handling
+# - Volume declarations for data persistence
+# - Comprehensive environment verification
+# - Robust entrypoint scripts
